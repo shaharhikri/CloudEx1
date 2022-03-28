@@ -73,7 +73,7 @@ function userSchemCheck(obj){
             return false;
         }
         for (let i = 0; i < obj.roles.length; i++) {
-            if(typeof obj.roles[i] !== 'string' ){
+            if(!obj.roles[i] || typeof obj.roles[i] !== 'string' || obj.roles[i] === '' ){
                 return false;
             }
         }
