@@ -26,3 +26,11 @@ const server = app.listen(port, function () {
 // console.log(u)
 
 // console.log(y.toLocaleDateString("he-IL"))
+
+// o = {
+//     aaa : 'aaa',
+//     b : 'bbb',
+//     bb : 'bbb'
+// };
+
+// console.log(Object.keys(o).length)

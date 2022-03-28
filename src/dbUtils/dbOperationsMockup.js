@@ -7,12 +7,12 @@ function storeUser(userEntity){
 }
 
 function findUserByEmail(email){
-    console.log(users)
+    // console.log(users)
     return users.find(u => u.email === email)
 }
 
 function findUserByEmail(email){
-    console.log(users)
+    // console.log(users)
     return users.find(u => u.email === email)
 }
 

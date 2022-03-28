@@ -72,6 +72,11 @@ function userSchemCheck(obj){
         if(!Array.isArray(obj.roles)){
             return false;
         }
+        for (let i = 0; i < obj.roles.length; i++) {
+            if(typeof obj.roles[i] !== 'string' ){
+                return false;
+            }
+        }
         return true;
     }
     catch {
