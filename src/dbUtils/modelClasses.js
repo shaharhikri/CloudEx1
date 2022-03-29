@@ -84,4 +84,7 @@ function userSchemCheck(obj){
     }
 }
 
-module.exports = { User:User, userSchemCheck:userSchemCheck };
+module.exports = { 
+    User, 
+    userSchemCheck 
+};

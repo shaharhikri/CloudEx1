@@ -114,9 +114,9 @@ router.put("/:email", async (req, res) => {
         }
         else{
             let email = u.email;
-            let name=u.name;
+            let name = u.name;
             let password = u.password;
-            let birthdate=u.birthdate.toLocaleDateString("he-IL").toString();
+            let birthdate = u.birthdate.toLocaleDateString("he-IL").toString();
             let roles = u.roles;
 
             if(req.body.name){
@@ -165,9 +165,52 @@ router.delete("/", async (req, res) => {
 });
 
 // GET /customers/search?size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-
 // GET /customers/search?criteriaType=byEmailDomain&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-
 // GET /customers/search?criteriaType=byBirthYear&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
+
+router.get("/search", async (req, res) => {
+    let criteriaType, criteriaValue, size, page, sortBy, sortOrder;
+    try{
+        criteriaType = req.query.criteriaType;
+        criteriaValue = req.query.criteriaValue;
+        size = req.query.size;
+        page = req.query.page;
+        sortBy = req.query.sortBy;
+        sortOrder = req.query.sortOrder;
+
+        if (!criteriaType){
+            criteriaType = dbOperations.criteriaTypes[0];
+        }
+        if (!sortBy){
+            sortBy = dbOperations.sortByValues[0];
+        }
+        if(!sortOrder){
+            sortOrder = dbOperations.sortOrderValues[0];
+        }
+        let conditions = [
+            !size,
+            !page,
+            !dbOperations.criteriaTypes.includes(criteriaType),
+            !dbOperations.sortByValues.includes(sortBy),
+            !dbOperations.sortOrderValues.includes(sortOrder)
+        ]
+
+        //TODO check statuses
+        if (conditions.includes(true))
+            {
+                res.status(servererrorStatus).send();
+                return;
+        }
+        let UsersResponse = dbOperations.searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder);
+        if (!UsersResponse){
+            res.status(servererrorStatus).send();
+        }else{
+            res.status(okStatus).json( UsersResponse );
+        }
+    }
+    catch(err) {
+        res.status(servererrorStatus).send();
+    }
+});
 
 module.exports = router;
