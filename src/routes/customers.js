@@ -10,6 +10,7 @@ router.use(bodyParser.json());
 const okStatus = 200
 const badreqStatus = 400;
 const forbiddenStatus = 403;
+const unauthorizedStatus = 401;
 const notfoundStatus = 404;
 const servererrorStatus = 500;
 
@@ -85,7 +86,7 @@ router.get("/login/:email", async (req, res) => {
         let u = dbOperations.validateUser(req.params.email, req.query.password);
         // console.log(req.params.email, req.query.password);
         if( !u ){
-            res.status(forbiddenStatus).json({ error: `Email or Password incorrect.` });
+            res.status(unauthorizedStatus).json({ error: `Email or Password incorrect.` });
         }
         else{
             res.status(okStatus).json( u.cloneWithoutPasswornd() );
@@ -167,7 +168,6 @@ router.delete("/", async (req, res) => {
 // GET /customers/search?size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
 // GET /customers/search?criteriaType=byEmailDomain&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
 // GET /customers/search?criteriaType=byBirthYear&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-
 router.get("/search", async (req, res) => {
     let criteriaType, criteriaValue, size, page, sortBy, sortOrder;
     try{
@@ -178,8 +178,14 @@ router.get("/search", async (req, res) => {
         sortBy = req.query.sortBy;
         sortOrder = req.query.sortOrder;
 
+        if (criteriaType && !criteriaValue){
+            res.status(badreqStatus).json({ error: 'Missing criteriaValue param.' });
+            return;
+        }
+
         if (!criteriaType){
             criteriaType = dbOperations.criteriaTypes[0];
+            criteriaValue='mydomain.org.il';
         }
         if (!sortBy){
             sortBy = dbOperations.sortByValues[0];
@@ -187,20 +193,28 @@ router.get("/search", async (req, res) => {
         if(!sortOrder){
             sortOrder = dbOperations.sortOrderValues[0];
         }
-        let conditions = [
-            !size,
-            !page,
-            !dbOperations.criteriaTypes.includes(criteriaType),
-            !dbOperations.sortByValues.includes(sortBy),
-            !dbOperations.sortOrderValues.includes(sortOrder)
-        ]
 
-        //TODO check statuses
-        if (conditions.includes(true))
-            {
-                res.status(servererrorStatus).send();
-                return;
+        if(!size){
+            res.status(badreqStatus).json({ error: 'Missing size param.' });
+            return;
         }
+        if(!page){
+            res.status(badreqStatus).json({ error: 'Missing page param.' });
+            return;
+        }
+        if(!dbOperations.criteriaTypes.includes(criteriaType)){
+            res.status(badreqStatus).json({ error: 'criteriaType is invalid.' });
+            return;
+        }
+        if(!dbOperations.sortByValues.includes(sortBy)){
+            res.status(badreqStatus).json({ error: 'sortBy is invalid.' });
+            return;
+        }
+        if(!dbOperations.sortOrderValues.includes(sortOrder)){
+            res.status(badreqStatus).json({ error: 'sortOrder is invalid.' });
+            return;
+        }
+        
         let UsersResponse = dbOperations.searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder);
         if (!UsersResponse){
             res.status(servererrorStatus).send();
