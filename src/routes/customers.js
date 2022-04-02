@@ -177,23 +177,6 @@ router.get("/search", async (req, res) => {
         page = req.query.page;
         sortBy = req.query.sortBy;
         sortOrder = req.query.sortOrder;
-
-        if (criteriaType && !criteriaValue){
-            res.status(badreqStatus).json({ error: 'Missing criteriaValue param.' });
-            return;
-        }
-
-        if (!criteriaType){
-            criteriaType = dbOperations.criteriaTypes[0];
-            criteriaValue='mydomain.org.il';
-        }
-        if (!sortBy){
-            sortBy = dbOperations.sortByValues[0];
-        }
-        if(!sortOrder){
-            sortOrder = dbOperations.sortOrderValues[0];
-        }
-
         if(!size){
             res.status(badreqStatus).json({ error: 'Missing size param.' });
             return;
@@ -202,6 +185,20 @@ router.get("/search", async (req, res) => {
             res.status(badreqStatus).json({ error: 'Missing page param.' });
             return;
         }
+        if (!criteriaType){
+            criteriaType = dbOperations.criteriaTypes[0];
+        }
+        else if (!criteriaValue){
+            res.status(badreqStatus).json({ error: 'Missing criteriaValue param.' });
+            return;
+        }
+        if (!sortBy){
+            sortBy = dbOperations.sortByValues[0];
+        }
+        if(!sortOrder){
+            sortOrder = dbOperations.sortOrderValues[0];
+        }
+
         if(!dbOperations.criteriaTypes.includes(criteriaType)){
             res.status(badreqStatus).json({ error: 'criteriaType is invalid.' });
             return;
