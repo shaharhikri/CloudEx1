@@ -34,3 +34,8 @@ const server = app.listen(port, function () {
 // };
 
 // console.log(Object.keys(o).length)
+
+a = {
+    aaa : 'AAA'
+}
+console.log(Object.keys(a))

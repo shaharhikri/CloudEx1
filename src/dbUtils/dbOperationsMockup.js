@@ -2,27 +2,43 @@ const { User } = require('../dbUtils/modelClasses');
 
 
 const users = []
-const friends = [];
+const friends = {}; //dict
 
 
-function searchFriends(email, size, page, sortBy, sortOrder) {
-    let output = [];
+function searchFriends(email, size, page, sortBy, sortOrder, level=1) {
+    let output = undefined;
 
-    friends.forEach(friend => {
-        if (friend[0]['email'] === email) {
-            output.push(friend[1]['email'])
+    if(level===1){
+        output = [];
+        if(friends[email]){
+            output = friends[email];
         }
-        if (friend[1]['email']  === email) {
-            output.push(friend[0]['email'])
+    }
+    else if(level===2){
+        let friends_first = [];
+        if(friends[email]){
+            friends_first = friends[email];
         }
-    });
+        friends_first.push(email);
+    
+        let friends_dict = [];
+    
+        for (const friend1 of friends_first) {
+            friends_dict[friend1] = null;
+            let friends_second = friends[friend1];
+            if(friends_second){
+                for (const friend2 of friends_second) {
+                    friends_dict[friend2] = null;
+                }
+            }
+        }
+        output = Object.keys(req.friends);
+    }
 
-    // TODO Checking undefined
     if (output === undefined) {
         return undefined;
     }
     output.sort();
-
 
     if (sortOrder === 'DESC') {
         output.reverse();
@@ -30,13 +46,22 @@ function searchFriends(email, size, page, sortBy, sortOrder) {
 
     // implement pagination
     output = output.slice((page - 1) * size, page * size);
-
     return output;
 }
 
-function storeFriends(FriendEntity) {
-    friends.push(FriendEntity);
+function storeFriends(customerEmail, friendEmail) {
+    customerEmail = customerEmail.email;
+    friendEmail = friendEmail.email;
+    if ( !friends[customerEmail] ){
+        friends[customerEmail] = [];
+    }
+    if ( !friends[friendEmail] ){
+        friends[friendEmail] = [];
+    }
+    friends[customerEmail].push(friendEmail);
+    friends[friendEmail].push(customerEmail);
 }
+
 function storeUser(userEntity) {
     users.push(userEntity);
 }

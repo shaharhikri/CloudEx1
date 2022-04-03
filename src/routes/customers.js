@@ -172,8 +172,7 @@ router.put("/:email/friends", async (req, res) => {
         try{
             let friendEmail = new Friends(req.body.email)
             let customerEmail = new Friends(req.params.email)
-            let u = [customerEmail, friendEmail ];
-            dbOperations.storeFriends(u);
+            dbOperations.storeFriends(customerEmail, friendEmail);
             res.status(okStatus).send();
         }
         catch {
@@ -188,7 +187,6 @@ router.put("/:email/friends", async (req, res) => {
 })
 
 // GET /customers/{email}/friends?size={size}&page={page}
-
 router.get("/:email/friends", async (req, res) => {
     try{
         size = req.query.size;
@@ -208,7 +206,7 @@ router.get("/:email/friends", async (req, res) => {
             res.status(badreqStatus).json({ error: 'Missing Email.' });
             return;
         }
-        let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder);
+        let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder, 1);
         if (!customerFriends){
             res.status(servererrorStatus).send();
         }else{
@@ -218,7 +216,39 @@ router.get("/:email/friends", async (req, res) => {
     catch(err) {
         res.status(servererrorStatus).send();
     }
-})
+});
+
+// GET /customers/{email}/friends/secondLevel?size={size}&page={page}
+router.get("/:email/friends/secondLevel", async (req, res) => {
+    try{
+        size = req.query.size;
+        page = req.query.page;
+        sortBy = dbOperations.sortByValues[0];
+        sortOrder = dbOperations.sortOrderValues[0];
+        if(!size){
+            res.status(badreqStatus).json({ error: 'Missing size param.' });
+            return;
+        }
+        if(!page){
+            res.status(badreqStatus).json({ error: 'Missing page param.' });
+            return;
+        }
+        
+        if(!req.params.email){
+            res.status(badreqStatus).json({ error: 'Missing Email.' });
+            return;
+        }
+        let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder, 2);
+        if (!customerFriends){
+            res.status(servererrorStatus).send();
+        }else{
+            res.status(okStatus).json( customerFriends );
+        }
+    }
+    catch(err) {
+        res.status(servererrorStatus).send();
+    }
+});
 
 // DELETE /customers
 router.delete("/", async (req, res) => {
