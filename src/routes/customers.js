@@ -165,7 +165,7 @@ router.put("/:email/friends", async (req, res) => {
             return;
         }
         if (! dbOperations.findUserByEmail(req.params.email) ){
-            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.body.email}.` });
+            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.params.email}.` });
             return;
         }
         if (! dbOperations.findUserByEmail(req.body.email) ){
