@@ -46,7 +46,15 @@ function searchFriends(email, size, page, sortBy, sortOrder, level=1) {
 
     // implement pagination
     output = output.slice((page - 1) * size, page * size);
-    return output;
+
+    output_users = [];
+    output.forEach( e => {
+        let user_e = findUserByEmail(e);
+        if(user_e){
+            output_users.push(user_e);
+        }
+    });
+    return output_users;
 }
 
 function storeFriends(customerEmail, friendEmail) {
