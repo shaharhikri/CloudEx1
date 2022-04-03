@@ -11,31 +11,3 @@ app.use('/customers', customers);
 const server = app.listen(port, function () {
     console.log(`Listening on port ${server.address().port}`);
 });
-
-// x = new Date('')
-// y = new Date("1963-11-19")
-// console.log(x)
-// console.log(y)
-// console.log(isNaN(x))
-// console.log(isNaN(y))
-// let a = []
-// console.log(Array.isArray(a) )
-
-// const { User } = require('./src/dbUtils/modelClasses');
-// let u = new User("customer1@afeka.ac.il", {first:"Cynthia", last:"Chambers"}, "ab4de", "19-11-1963", ["goldCustomer","platinumClub","primeService"] )
-// console.log(u)
-
-// console.log(y.toLocaleDateString("he-IL"))
-
-// o = {
-//     aaa : 'aaa',
-//     b : 'bbb',
-//     bb : 'bbb'
-// };
-
-// console.log(Object.keys(o).length)
-
-a = {
-    aaa : 'AAA'
-}
-console.log(Object.keys(a))

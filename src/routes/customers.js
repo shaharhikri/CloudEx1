@@ -176,7 +176,6 @@ router.put("/:email/friends", async (req, res) => {
             res.status(okStatus).send();
         }
         catch {
-            console.log('badreqStatus')
             res.status(badreqStatus).json({ error: 'Bad body format.' });
         }
     }
