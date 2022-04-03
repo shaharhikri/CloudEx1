@@ -156,9 +156,12 @@ router.put("/:email/friends", async (req, res) => {
             res.status(badreqStatus).json({ error: 'Missing body.' });
             return;
         }
-
         if(!req.body.email){
-            res.status(badreqStatus).json({ error: 'Missing Email.' });
+            res.status(badreqStatus).json({ error: 'Missing friend Email.' });
+            return;
+        }
+        if(!req.params.email){
+            res.status(badreqStatus).json({ error: 'Missing email param.' });
             return;
         }
         if (! dbOperations.findUserByEmail(req.params.email) ){
@@ -205,6 +208,10 @@ router.get("/:email/friends", async (req, res) => {
             res.status(badreqStatus).json({ error: 'Missing Email.' });
             return;
         }
+        if (! dbOperations.findUserByEmail(req.params.email) ){
+            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.body.email}.` });
+            return;
+        }
         let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder, 1);
         if (!customerFriends){
             res.status(servererrorStatus).send();
@@ -235,6 +242,10 @@ router.get("/:email/friends/secondLevel", async (req, res) => {
         
         if(!req.params.email){
             res.status(badreqStatus).json({ error: 'Missing Email.' });
+            return;
+        }
+        if (! dbOperations.findUserByEmail(req.params.email) ){
+            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.body.email}.` });
             return;
         }
         let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder, 2);
