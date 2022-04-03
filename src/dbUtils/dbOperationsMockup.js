@@ -61,16 +61,23 @@ function storeFriends(customerEmail, friendEmail) {
     customerEmail = customerEmail.email;
     friendEmail = friendEmail.email;
     if ( !friends[customerEmail] ){
-        friends[customerEmail] = [];
+        friends[customerEmail] = [ customerEmail ];
     }
     if ( !friends[friendEmail] ){
-        friends[friendEmail] = [];
+        friends[friendEmail] = [ friendEmail ];
     }
-    friends[customerEmail].push(friendEmail);
-    friends[friendEmail].push(customerEmail);
+    if(!friends[customerEmail].includes(friendEmail)){
+        friends[customerEmail].push(friendEmail);
+    }
+    if(!friends[friendEmail].includes(customerEmail)){
+        friends[friendEmail].push(customerEmail);
+    }
 }
 
 function storeUser(userEntity) {
+    if ( !friends[userEntity.email] ){
+        friends[userEntity.email] = [ userEntity.email ];
+    }
     users.push(userEntity);
 }
 
