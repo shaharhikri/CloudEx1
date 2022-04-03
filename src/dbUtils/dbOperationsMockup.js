@@ -51,7 +51,7 @@ function searchFriends(email, size, page, sortBy, sortOrder, level=1) {
     output.forEach( e => {
         let user_e = findUserByEmail(e);
         if(user_e){
-            output_users.push(user_e);
+            output_users.push(user_e.cloneWithoutPasswornd());
         }
     });
     return output_users;
