@@ -1,8 +1,8 @@
 const { User } = require('../dbUtils/modelClasses');
 
 
-const users = []
-const friends = {}; //dict
+let users = []
+let friends = {}; //dict
 
 
 function searchFriends(email, size, page, sortBy, sortOrder, level=1) {
@@ -224,9 +224,8 @@ function searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder)
 }
 
 function deleteAllUsers() {
-    while (users.length > 0) {
-        users.pop();
-    }
+    users = []
+    friends = {}
 }
 
 module.exports = {
