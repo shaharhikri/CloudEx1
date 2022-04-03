@@ -32,7 +32,7 @@ function searchFriends(email, size, page, sortBy, sortOrder, level=1) {
                 }
             }
         }
-        output = Object.keys(req.friends);
+        output = Object.keys(friends_dict);
     }
 
     if (output === undefined) {
