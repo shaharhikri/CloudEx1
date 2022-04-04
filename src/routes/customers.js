@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { User, userSchemCheck } = require('../dbUtils/modelClasses');
+const { User, Friends } = require('../dbUtils/modelClasses');
 const dbOperations = require('../dbUtils/dbOperationsMockup');
 const bodyParser = require('body-parser');
 
@@ -150,8 +150,75 @@ router.put("/:email", async (req, res) => {
 });
 
 // PUT /customers/{email}/friends
+router.put("/:email/friends", async (req, res) => {
+    try {
+        if (!req.body) {
+            res.status(badreqStatus).json({ error: 'Missing body.' });
+            return;
+        }
+
+        if(!req.body.email){
+            res.status(badreqStatus).json({ error: 'Missing Email.' });
+            return;
+        }
+        if (! dbOperations.findUserByEmail(req.params.email) ){
+            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.body.email}.` });
+            return;
+        }
+        if (! dbOperations.findUserByEmail(req.body.email) ){
+            res.status(forbiddenStatus).json({ error: `There's no customer with Email ${req.body.email}.` });
+            return;
+        }
+        try{
+            let friendEmail = new Friends(req.body.email)
+            let customerEmail = new Friends(req.params.email)
+            let u = [customerEmail, friendEmail ];
+            dbOperations.storeFriends(u);
+            res.status(okStatus).send();
+        }
+        catch {
+            console.log('badreqStatus')
+            res.status(badreqStatus).json({ error: 'Bad body format.' });
+        }
+    }
+    catch {
+
+        res.status(servererrorStatus).send();
+    }
+})
 
 // GET /customers/{email}/friends?size={size}&page={page}
+
+router.get("/:email/friends", async (req, res) => {
+    try{
+        size = req.query.size;
+        page = req.query.page;
+        sortBy = dbOperations.sortByValues[0];
+        sortOrder = dbOperations.sortOrderValues[0];
+        if(!size){
+            res.status(badreqStatus).json({ error: 'Missing size param.' });
+            return;
+        }
+        if(!page){
+            res.status(badreqStatus).json({ error: 'Missing page param.' });
+            return;
+        }
+        
+        if(!req.params.email){
+            res.status(badreqStatus).json({ error: 'Missing Email.' });
+            return;
+        }
+        let customerFriends = dbOperations.searchFriends(req.params.email, size, page, sortBy, sortOrder);
+        if (!customerFriends){
+            res.status(servererrorStatus).send();
+        }else{
+            res.status(okStatus).json( customerFriends );
+        }
+    }
+    catch(err) {
+        res.status(servererrorStatus).send();
+    }
+})
 
 // DELETE /customers
 router.delete("/", async (req, res) => {

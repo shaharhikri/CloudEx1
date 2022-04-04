@@ -20,6 +20,30 @@ class User {
 
 }
 
+class Friends {
+    constructor(email) {
+        this.email = email;
+        if(!FriendSchemCheck(this)){
+            throw new Error('Friend constructor error: Email field is invalid');
+        }
+    }
+}
+
+function FriendSchemCheck(obj){
+    try{
+        if( !obj.email) {
+            return false;
+        }
+        if(typeof obj.email !== 'string') {
+            return false;
+        }
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+
 function reverseDate(dateAsStr){
     try{
         if (dateAsStr.includes('-')) {
@@ -85,6 +109,8 @@ function userSchemCheck(obj){
 }
 
 module.exports = { 
-    User, 
-    userSchemCheck 
+    User,
+    Friends,
+    userSchemCheck,
+    FriendSchemCheck
 };

@@ -2,19 +2,53 @@ const { User } = require('../dbUtils/modelClasses');
 
 
 const users = []
+const friends = [];
 
-function storeUser(userEntity){
+
+function searchFriends(email, size, page, sortBy, sortOrder) {
+    let output = [];
+
+    friends.forEach(friend => {
+        if (friend[0]['email'] === email) {
+            output.push(friend[1]['email'])
+        }
+        if (friend[1]['email']  === email) {
+            output.push(friend[0]['email'])
+        }
+    });
+
+    // TODO Checking undefined
+    if (output === undefined) {
+        return undefined;
+    }
+    output.sort();
+
+
+    if (sortOrder === 'DESC') {
+        output.reverse();
+    }
+
+    // implement pagination
+    output = output.slice((page - 1) * size, page * size);
+
+    return output;
+}
+
+function storeFriends(FriendEntity) {
+    friends.push(FriendEntity);
+}
+function storeUser(userEntity) {
     users.push(userEntity);
 }
 
-function findUserByEmail(email){
+function findUserByEmail(email) {
     // console.log(users)
     return users.find(u => u.email === email)
 }
 
-function validateUser(email, password){
+function validateUser(email, password) {
     let u = users.find(u => u.email === email);
-    if (u && u.password === password){
+    if (u && u.password === password) {
         return u;
     }
     else {
@@ -22,19 +56,19 @@ function validateUser(email, password){
     }
 }
 
-function updateUser(user){
+function updateUser(user) {
     let old_user = users.find(u => u.email === user.email);
-    if(old_user){
-        if(user.name){
+    if (old_user) {
+        if (user.name) {
             old_user.name = user.name;
         }
-        if(user.password){
+        if (user.password) {
             old_user.password = user.password;
         }
-        if(user.birthdate){
+        if (user.birthdate) {
             old_user.birthdate = user.birthdate;
         }
-        if(user.roles){
+        if (user.roles) {
             old_user.roles = user.roles;
         }
     }
@@ -45,50 +79,50 @@ const criteriaTypes = ['Default', 'byEmailDomain', 'byBirthYear', 'byRole'];
 const sortByValues = ['email', 'fname', 'lname', 'birthdate'];
 const sortOrderValues = ['ASC', 'DESC'];
 
-function criteriaTypeCase(criteriaType, criteriaValue){
+function criteriaTypeCase(criteriaType, criteriaValue) {
     let output = [];
     switch (criteriaType) {
         case 'Default':
             output = users;
             break;
         case 'byEmailDomain':
-            if(!criteriaValue){
+            if (!criteriaValue) {
                 output = undefined;
             }
-            else{
+            else {
                 users.forEach(user => {
-                    if((user.email).includes(criteriaValue)){
+                    if ((user.email).includes(criteriaValue)) {
                         output.push(user);
                     }
                 });
             }
             break;
         case 'byBirthYear':
-            if(!criteriaValue){
+            if (!criteriaValue) {
                 output = undefined;
             }
-            else{
+            else {
                 users.forEach(user => {
-                    if((user.birthdate).getFullYear() == criteriaValue){
+                    if ((user.birthdate).getFullYear() == criteriaValue) {
                         output.push(user);
                     }
                 });
             }
-            
+
             break;
         case 'byRole':
-            if(!criteriaValue){
+            if (!criteriaValue) {
                 output = undefined;
             }
-            else{
+            else {
                 users.forEach(user => {
-                    if((user.roles).includes(criteriaValue)){
+                    if ((user.roles).includes(criteriaValue)) {
                         output.push(user);
                     }
-                });                
+                });
             }
             break;
-    
+
         default:
             output = users;
             break;
@@ -97,7 +131,7 @@ function criteriaTypeCase(criteriaType, criteriaValue){
     return output
 }
 
-function sortByCase(arr, sortBy){
+function sortByCase(arr, sortBy) {
     switch (sortBy) {
         case 'email':
             arr.sort((a, b) => b.email - a.email);
@@ -113,8 +147,8 @@ function sortByCase(arr, sortBy){
 
         case 'birthdate':
             arr.sort((a, b) => b.birthdate - a.birthdate);
-            break;    
-            
+            break;
+
         default:
             arr = undefined;
             break;
@@ -124,25 +158,25 @@ function sortByCase(arr, sortBy){
 }
 
 
-function searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder){
+function searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder) {
     let output = [];
     output = criteriaTypeCase(criteriaType, criteriaValue);
     // console.log(sortBy);
     output = sortByCase(output, sortBy);
-    
+
     // TODO Checking undefined
-    if (output === undefined){
+    if (output === undefined) {
         return undefined;
     }
 
 
-    if (sortOrder === 'DESC'){
+    if (sortOrder === 'DESC') {
         output.reverse();
     }
-    
+
     // implement pagination
-    output = output.slice(size*page, size*page + size);
-    
+    output = output.slice(size * page, size * page + size);
+
     for (let i = 0; i < output.length; i++) {
         output[i] = output[i].cloneWithoutPasswornd()
     }
@@ -150,7 +184,7 @@ function searchUsers(criteriaType, criteriaValue, size, page, sortBy, sortOrder)
 }
 
 function deleteAllUsers() {
-    while(users.length > 0) {
+    while (users.length > 0) {
         users.pop();
     }
 }
@@ -160,9 +194,11 @@ module.exports = {
     sortByValues,
     sortOrderValues,
     storeUser,
-    findUserByEmail, 
-    validateUser, 
+    findUserByEmail,
+    validateUser,
     updateUser,
     searchUsers,
-    deleteAllUsers
+    deleteAllUsers,
+    searchFriends,
+    storeFriends
 }
